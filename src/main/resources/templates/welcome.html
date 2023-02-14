@@ -1,0 +1,203 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://ultraq.net.nz/thymeleaf/layout ">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+          crossorigin="anonymous">
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark " style="background-color: rgba(89, 22, 171)"
+     xmlns:th="http://www.thymeleaf.org">
+    <a class="navbar-brand" th:href="@{'/'}"><i class="fa-light fa-aperture"></i>&nbsp;AdverShop</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+            <!--            <li class="nav-item active mb-2" sec:authorize="hasAnyRole('ROLE_ADMIN')">-->
+            <!--                <a class="nav-link" th:href="@{'/adminPage'}">Admin Page</a>-->
+            <!--            </li>-->
+            <li class="nav-item active mb-2" sec:authorize="isAuthenticated()">
+                <a class="nav-link" th:href="@{'/profile'}" th:text="${currentUser.fullName}"></a>
+            </li>
+            <li class="nav-item active mb-2" sec:authorize="isAnonymous()">
+                <a class="nav-link" th:href="@{/register}">Sign Up</a>
+            </li>
+            <!--            <li class="nav-item active" style="display: flex">-->
+            <!--                <select class="form-control" id="s1">-->
+            <!--                    <option value="?lng=eng">ENG</option>-->
+            <!--                    <option value="?lng=ru">RUS</option>-->
+            <!--                    <option value="?lng=kz">KAZ</option>-->
+            <!--                </select>-->
+            <!--                <span><a id="a1" class="btn btn-light btn-sm ml-1 mt-1" href="?lng=eng" th:text="#{button.change}"></a></span>-->
+            <!--            </li>-->
+            <li class="nav-item active mb-2" sec:authorize="isAnonymous()">
+                <a class="nav-link" th:href="@{/login}">Login</a>
+            </li>
+            <li class="nav-item active mb-2">
+            <li class="nav-item active mb-2" sec:authorize="isAuthenticated()">
+                <a class="nav-link" href="JavaScript:void (0)"
+                   onclick="document.getElementById('signOutFormId').submit()">LogOut</a>
+            </li>
+
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<form th:action="@{/logout}" method="post" id="signOutFormId" sec:authorize="isAuthenticated()">
+</form>
+
+<div class="form-inline mt-3">
+    <h3>All Posts</h3>
+    <button type="button" class="btn ml-auto mr-2 mb-2" style="background-color: rgba(54,54,54,0.96);color: white"
+            data-toggle="modal" id="addNew"
+            data-target="#staticBackdrop" th:text="Add">
+    </button>
+</div>
+
+<div>
+
+    <div class="row mt-3">
+        <div class="col-sm-4" th:each="advertisement : ${advertisements}">
+            <div class="card mt-3">
+                <img th:src="${advertisement.getPicUrl()}" class="card-img-top mt-1" style=" width: 100%; height: 300px"
+                     alt="...">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="h4">Name: </label>
+                        <div class="card-title h5" style="height: 50px; display: inline-block"
+                             th:text="${advertisement.getName()}">
+                        </div>
+                        <div class="form-group">
+                            <label class="h4">Start Price: </label>
+                            <div class="h5" style="display: inline-block" th:text="${advertisement.getPrice()}"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="h4">Description: </label>
+                            <div class="h5" style="display: inline-block" th:text="${advertisement.getDescription()}"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="h4">Stake: </label>
+                        <div class="h5" style="display: inline-block"
+                           th:text="${advertisement.getTempPrice()!=null?advertisement.getTempPrice():0}"></div>
+                        </div>
+                        <div class="form-group">
+                            <label th:if="${advertisement.getIsActive()==true}" class="h4">Future Owner: </label>
+                            <label th:if="${advertisement.getIsActive()==false}" class="h4">Owner: </label>
+                        <div class="h5" style="display: inline-block"
+                           th:text="${advertisement.getFutureOwner()!=null?advertisement.getFutureOwner().getFullName():'Nobody'}"></div>
+                        </div>
+                        <p class="card-title h4" th:text="${advertisement.getIsActive()==true?'ACTIVE':'SOLD'}"></p>
+                        <p th:id="${advertisement.getId()}"></p>
+                        <a th:if="${advertisement.getIsActive()==true}" th:href="@{'/buyAd/'+${advertisement.getId()}}"><p class="card-text" th:text="Buy"></p></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--    <table class="table table-striped mt-1">-->
+        <!--        <thead>-->
+        <!--        <tr>-->
+        <!--            <th>ID</th>-->
+        <!--            <th>NAME</th>-->
+        <!--            <th>DESCRIPTION</th>-->
+        <!--            <th>PRICE</th>-->
+        <!--            <th>EDIT</th>-->
+        <!--        </tr>-->
+        <!--        </thead>-->
+        <!--        <tbody th:each="advertisement: ${advertisements}">-->
+        <!--        <tr>-->
+        <!--            <td th:text="${advertisement.getId()}"></td>-->
+        <!--            <td th:text="${advertisement.getName()}"></td>-->
+        <!--            <td th:text="${advertisement.getDescription()}"></td>-->
+        <!--            <td th:text="${advertisement.getPrice()}"></td>-->
+        <!--            <td><a th:href="@{'/readMoreCategories/'+${advertisement.getId()}}" class="btn" style="background-color: rgba(54,54,54,0.96);color: white"><i-->
+        <!--                    class="fas fa-edit"></i></a></td>-->
+        <!--        </tr>-->
+        <!--        </tbody>-->
+        <!--    </table>-->
+    </div>
+
+    <form th:action="@{'/addAdvertisement'}" method="post">
+        <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel" th:text="Post"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label th:text="Name"></label>
+                            <input type="text" name="post_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="Description"></label>
+                            <input type="text" name="post_description" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="Price"></label>
+                            <input type="text" name="post_price" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="Picture"></label>
+                            <input type="text" name="post_picture" class="form-control">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                    th:text="Close"></button>
+                            <button type="submit" class="btn btn-primary" th:text="Add"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
+<script>
+    var seconds = 120;
+
+    var countDownDate = new Date("Jan 5, 2024 15:37:25").getTime();
+
+    var x = setInterval(function () {
+        var now = new Date().getTime();
+        var distance = countDownDate - now;
+
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("demo").innerHTML = hours + "h "
+            + minutes + "m " + seconds + "s ";
+
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("demo").innerHTML = "EXPIRED";
+        }
+    }, 1000);
+</script>
